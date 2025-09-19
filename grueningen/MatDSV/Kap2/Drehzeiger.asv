@@ -1,0 +1,158 @@
+% M-File  Drehzeiger
+%
+% Dieses M-File simuliert einen rotierenden Zeiger und zeigt seinen
+% Imaginärteil in Funktion der Zeit
+
+% -----------------------  23.09.2009 / DvG  [MGT03]  ----------------------------
+
+
+close, home, %colordef black
+
+disp(' '),disp(' ')
+disp('Simulation eines rotierenden Zeigers und Darstellung') 
+disp('seines Imaginärteils in Funktion der Zeit')
+disp('----------------------------------------------------')
+disp(' '),disp(' ')
+disp('Geben Sie ein:')
+disp(' ')
+prompt = "Frequenz  f0  in Hz: ";
+f0 = input(prompt)
+disp('Schliessen Sie die Eingabe mit der Buchstabenfolge   return   ab.')
+disp(' '),disp(' ')
+disp('Eingabe-Beispiele:')
+disp(' ')
+disp('f0=4; return')
+disp(' ')
+disp('f0=-4; return')
+disp(' '),disp(' ')
+
+%keyboard
+
+
+%	decaying or growing phasor
+M = 128;			% no of samples
+step = 360/M;			% angular step (degrees)
+f = f0;				% fequency (Hz)
+dt = 1/M;			% time step (seconds)
+ph = 0;				% initial phase shift
+t = 0:dt:1;			% time axis
+A = 1.0;			% initial amplitude
+sign = -1;			% decaying (-1) or growing (+1)
+tau = 100;			% time constant (seconds)
+x = A*exp(sign*t/tau) .* exp( j*2*pi*f*t - j*ph/180*pi );
+xr = real(x);
+xi = imag(x);
+xmax = max([xr xi ])*1.1;
+tmin = min(t);
+tmax = max(t);
+
+%	set up phasor plot
+axh1 = subplot(1,2,1);
+l1(1)= line('Xdata',xr(1),'Ydata',xi(1));
+set(l1(1),'LineStyle','-');
+set(l1(1),'Color','w');
+set(l1(1),'EraseMode','xor');
+xx = [ 0 xr(1) ];
+yy = [ 0 xi(1) ];
+l1(2)= line('Xdata',xx,'Ydata',yy);
+set(l1(2),'LineStyle','-');
+set(l1(2),'Color','y');
+set(l1(2),'EraseMode','xor');
+%axis( [-1.1 1.1 -1.1 1.1 ]);
+axis( [ -xmax xmax -xmax xmax ]);
+axis('square')
+v1 = axis;
+xx = [ xr(1) v1(2) ];
+yy = [ xi(1) xi(1) ];
+l1(3)= line('Xdata',xx,'Ydata',yy);
+set(l1(3),'LineStyle','-');
+set(l1(3),'Color','b');
+set(l1(3),'EraseMode','xor');
+xx = [ xr(1) xr(1) ];
+yy = [ xi(1) xi(1) ];
+l1(4)= line('Xdata',xx,'Ydata',yy);
+set(l1(4),'LineStyle','-');
+set(l1(4),'Color','r');
+set(l1(4),'EraseMode','none');
+title('Drehzeiger');
+xlabel('Realteil');
+ylabel('Imaginärteil');
+hold on
+
+%	set up signal plot
+axh2 = subplot(1,2,2);
+l2(1) = line('Xdata',t(1),'Ydata',xi(1));
+set(l2(1),'LineStyle','-');
+set(l2(1),'Color','w');
+set(l2(1),'EraseMode','xor');
+tt = [ t(1) t(1) ];
+yy = [ xi(1) xi(1) ];
+l2(2) = line('Xdata',tt,'Ydata',yy);
+set(l2(2),'LineStyle','-');
+set(l2(2),'Color','y');
+set(l2(2),'EraseMode','none');
+%axis( [ 0 1 -1.1 1.1 ]);
+axis( [ tmin tmax -xmax xmax ] );
+v2 = axis;
+xx = [ t(1) v2(1) ];
+yy = [ xi(1) xi(1) ];
+l2(3)= line('Xdata',xx,'Ydata',yy);
+set(l2(3),'LineStyle','-');
+set(l2(3),'Color','b');
+set(l2(3),'EraseMode','xor');
+axis('square')
+xlabel('t');
+ylabel('Im');
+title('Imaginärteil in Abhängigkeit der Zeit');
+hold on
+
+disp(' ')
+disp('Zum Start Enter-Taste drücken')
+pause
+
+for ii =1:M+1,
+
+%	timer
+t0 = clock;
+te = 0;
+
+%	phasor plot
+subplot(1,2,1)
+set(l1(1),'Xdata',xr(ii),'Ydata',xi(ii));
+xx = [ 0 xr(ii) ];
+yy = [ 0 xi(ii) ];
+set(l1(2),'Xdata',xx,'Ydata',yy);
+xx = [ xr(ii) v1(2) ];
+yy = [ xi(ii) xi(ii) ];
+set(l1(3),'Xdata',xx,'Ydata',yy);
+if ii==1,
+	xx = [ xr(ii) xr(ii) ];
+	yy = [ xi(ii) xi(ii) ];
+else
+	xx = xr(ii-1:ii);
+	yy = xi(ii-1:ii);
+end
+set(l1(4),'Xdata',xx,'Ydata',yy);
+
+%	signal plot
+subplot(1,2,2)
+set(l2(1),'Xdata',t(ii),'Ydata',xi(ii));
+if ii==1,
+	tt = [ t(1) t(1) ];
+	yy = [ xi(1) xi(1) ];
+else
+	tt = t(ii-1:ii);
+	yy = xi(ii-1:ii);
+end; 
+set(l2(2),'Xdata',tt,'Ydata',yy);
+xx = [ t(ii) v2(1) ];
+yy = [ xi(ii) xi(ii) ];
+set(l2(3),'Xdata',xx,'Ydata',yy);
+
+%	constant frame rate
+while te < 0.2
+	te = (clock - t0) * [0 0 86400 3600 60 1]';
+end
+
+
+end
