@@ -10,12 +10,12 @@ function sig_sinussignal_spektrum
 close all;
 
 % Laenge der FFT
-N = 256;
+N = 256
 
 % diskretes Sinus-Signal
-f_a = 1000;
-t_a = 1 / f_a;
-f = 13 * f_a / N;
+f_a = 1000
+t_a = 1 / f_a
+f = 13 * f_a / N
 t = (0 : N - 1) * t_a;
 x = sin(2 * pi * f * t);
 
