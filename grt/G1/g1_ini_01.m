@@ -136,30 +136,22 @@ T23 = (t23_10/a2_10 + t23_50/a2_50 + t23_90/a2_90) / 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % G234 = G2*G3*G4 Time Domain
 
+K234 = 102.9 / K0
+
+G234fit1 = K0*K234/((T23*s+1)^2*s);
+G234fit1.InputDelay = t0;
+
+
 figure(5)
 plot(t, u), grid on, hold on
 plot(t, y1)
-plot(t, y4), hold off
+plot(t, y4)
+plot(t, step(G234fit1, t)), hold off
 xlabel('Time [s]')
 ylabel('Voltage [V]')
-legend('u', 'y1', 'y4', ...
+legend('u', 'y1', 'y4', 'G234fit1', ...
     'Location', 'best')
 xlim([0.045 0.3])
-
-K234 = y4(end) / K0
-
-[val idx234_10] = min(abs(y4/y4(end) - 0.1));
-t234_10 = t(idx234_10) - t1
-
-[val idx234_50] = min(abs(y4/y4(end) - 0.5));
-t234_50 = t(idx234_50) - t1
-
-[val idx234_90] = min(abs(y4/y4(end) - 0.9));
-t234_90 = t(idx234_90) - t1
-
-mu234 = t234_10/t234_90
-n234 = 3
-T234 = (t234_10/a3_10 + t234_50/a3_50 + t234_90/a3_90) / 3
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % G1 Frequency Domain
