@@ -199,6 +199,8 @@ legend('G23')
 
 % %% model
 
+bode(G234fit1);
+
 % 
 % % parameters
 % R = 4.7e3;  % Ohm
