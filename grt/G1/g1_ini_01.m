@@ -46,6 +46,7 @@ load g1_G1234_data_01.mat
 
 load g1_G1234_time_data_01.mat
 
+
 f = G1.Frequency;
 s = tf('s');
 
@@ -58,18 +59,18 @@ abs(t(idx0) - t0)
 figure(1)
 plot(t, u), grid on, hold on
 plot(t, y1), hold off
+title('Sprungantwort G1')
 xlabel('Time [s]')
 ylabel('Voltage [V]')
-legend('u', 'y1', ...
-    'Location', 'best')
-xlim([0.045 0.055])
+legend('u', 'y1')
+%xlim([0 0.055])
 
 figure(2)
-plot(t, y1 - u)
+plot(t, y1 - u), grid on, hold on
+title('Sprungantwort G1: Bestimmung Totzeit')
 xlabel('Time [s]')
 ylabel('Voltage [V]')
-legend('y1-u', ...
-    'Location', 'best')
+legend('y1-u')
 xlim([0.0495 0.054])
 
 t1 = 0.0525
@@ -84,21 +85,25 @@ figure(3)
 plot(t, u), grid on, hold on
 plot(t, y1)
 plot(t, y2), hold off
+title('Sprungantwort G2')
 xlabel('Time [s]')
 ylabel('Voltage [V]')
 legend('u', 'y1', 'y2', ...
     'Location', 'best')
 xlim([0.045 0.3])
 
-K2 = y2(end) / K0
+K2t = y2(end) / K0
 
 [val idx2_10] = min(abs(y2/y2(end) - 0.1));
+t(idx2_10)
 t2_10 = t(idx2_10) - t1
 
 [val idx2_50] = min(abs(y2/y2(end) - 0.5));
+t(idx2_50)
 t2_50 = t(idx2_50) - t1
 
 [val idx2_90] = min(abs(y2/y2(end) - 0.9));
+t(idx2_90)
 t2_90 = t(idx2_90) - t1
 
 mu2 = t2_10/t2_90
@@ -115,6 +120,7 @@ figure(4)
 plot(t, u), grid on, hold on
 plot(t, y1)
 plot(t, y3), hold off
+title('Sprungantwort G23')
 xlabel('Time [s]')
 ylabel('Voltage [V]')
 legend('u', 'y1', 'y3', ...
@@ -124,12 +130,15 @@ xlim([0.045 0.3])
 K23 = y3(end) / K0
 
 [val idx23_10] = min(abs(y3/y3(end) - 0.1));
+t(idx23_10)
 t23_10 = t(idx23_10) - t1
 
 [val idx23_50] = min(abs(y3/y3(end) - 0.5));
+t(idx23_50)
 t23_50 = t(idx23_50) - t1
 
 [val idx23_90] = min(abs(y3/y3(end) - 0.9));
+t(idx23_90)
 t23_90 = t(idx23_90) - t1
 
 mu23 = t23_10/t23_90
@@ -144,11 +153,11 @@ K234 = 102.9 / K0
 G234fit1 = K0*K234/((T23*s+1)^2*s);
 G234fit1.InputDelay = t0;
 
-
 figure(5)
 plot(t, u), grid on, hold on
 plot(t, y1)
 plot(t, y4)
+title('Sprungantwort G234')
 plot(t, step(G234fit1, t)), hold off
 xlabel('Time [s]')
 ylabel('Voltage [V]')
@@ -161,49 +170,77 @@ xlim([0.045 0.3])
 figure(6)
 plot(f, unwrap(angle(squeeze(G1.ResponseData)))), grid on, hold on
 plot(f, -2*pi*f*Tt), hold off
+title('G1: Bestimmung Totzeit', '-2*pi*f*Tt')
 xlabel('Frequency [Hz]')
 ylabel('Phase [rad]')
 legend('G1', '-2*pi*f*Tt')
 
-G1fit = frd(exp(-2*pi*f*Tt*i), 2*pi*f);
+G1fit1 = frd(exp(-2*pi*f*Tt*i), 2*pi*f);
 
 figure(7)
-bode(G1, G1fit)
-legend('G1', 'exp(-j*2*pi*f*Tt)')
+bode(G1, G1fit1), grid on
+legend('G1', 'G1fit1(s)exp(-j*s*Tt)', ...
+    'Location', 'best')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % G2 Frequency Domain
 [g_max2, f_peak2] = getPeakGain(G2)
+K2f = g_max2
+
 w2 = bandwidth(G2, -3)
-1/w2
-T2
-
-
-G2fit = g_max2 / (s/w2 + 1);
+T2f= 1/w2
+G2fit1 = K2f / (T2f*s + 1);
 
 figure(8)
-bode(G2, G2fit)
-legend('G2')
+bode(G2, G2fit1), grid on
+legend('G2', 'G2fit1', ...
+   'Location', 'best')
 
 %[mag, phase] = bode(sys, 100)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % G23=G2*G3 Frequency Domain
 [g_max23, f_peak23] = getPeakGain(G23)
-w23 = bandwidth(G23, -6)
-1/w23
-T23
+K23f = g_max23
 
-G23fit = g_max23 / (s/w23 + 1)^2;
+w23 = bandwidth(G23, -6)
+T23f = 1/w23
+G23fit1 = K23f / (T23f*s + 1)^2;
 
 figure(9)
-bode(G23, G23fit)
-legend('G23')
+bode(G23, G23fit1), grid on
+legend('G23', 'G23fit1', ...
+   'Location', 'best')
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% G1234 Frequency Domain
+
+figure(10)
+subplot(2,1,1);
+plot(G1234_time.time, G1234_time.signals(1).values), grid on
+title('Stellsignal u')
+xlabel('Time [s]')
+ylabel('Voltage [V]')
+
+subplot(2,1,2);
+plot(G1234_time.time, G1234_time.signals(2).values), grid on
+title('Ausgang y4')
+xlabel('Time [s]')
+ylabel('Voltage [V]')
+
+
+figure(11)
+bode(G1234), grid on
+
+G1234fit2 = 50 / (s*(s/50 + 1)^2);
+
+figure(12)
+bode(G1234, G1234fit2), grid on
+legend('G1234', 'G1234fit2', ...
+   'Location', 'best')
+
 
 % %% model
-
-bode(G1234, G234fit1);
-
 % 
 % % parameters
 % R = 4.7e3;  % Ohm
