@@ -42,6 +42,9 @@ y4 = g1_step_data_01.signals(5).values;
 load g1_G1_data_01.mat
 load g1_G2_data_01.mat
 load g1_G23_data_01.mat
+load g1_G1234_data_01.mat
+
+load g1_G1234_time_data_01.mat
 
 f = G1.Frequency;
 s = tf('s');
@@ -199,7 +202,7 @@ legend('G23')
 
 % %% model
 
-bode(G234fit1);
+bode(G1234, G234fit1);
 
 % 
 % % parameters
