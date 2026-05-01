@@ -52,7 +52,5 @@ Tv=Kd/Kp
 Tf=Tv/10
 
 Gr=Kp*(1+Tv*s)/(1+Tf*s)
-Gv=om0cl^2/((Kp+Kd*s)*KsG_lin*om0G^2)
-
-omM=om0G
+Gv=om0cl^2/((Kp+Kd)*s*Ks*om0G^2)%%%%%%%%%%%%%
 
