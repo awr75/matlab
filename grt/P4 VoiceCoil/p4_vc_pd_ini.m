@@ -1,0 +1,55 @@
+clc, clear variables
+%% model
+
+load data_00.mat
+load G.mat
+
+figure (1)
+plot(data_00.time, data_00.signals(2).values); hold on;
+plot(data_00.time, data_00.signals(1).values);
+
+
+Ks=5.15/0.5
+Tp=1.176-1.06
+Delta1=8.681-5.15
+Delta2=2.376-5.15
+theta=log(Delta1/abs(Delta2))
+D=theta/sqrt(pi^2+theta^2)
+omD=2*pi/Tp
+om0=omD/sqrt(1-D^2)
+
+s=tf('s');
+Gsin=Ks*om0^2/(s^2+2*D*om0*s+om0^2);
+StepSim=lsim(Gsin,data_00.signals(1).values,data_00.time);
+
+figure (2)
+plot(data_00.time, data_00.signals(2).values,data_00.time,StepSim), grid on
+title('Comparison Simulation to Measurement')
+legend('Measurement', 'Simulation')
+ylabel('Output Position (mm)'), xlabel('Time (sec)')
+
+
+
+om0G=2*pi*7.49
+KsG_db= 20
+KsG_lin = db2mag(KsG_db)
+DeltaPeak_db=33-20
+DeltaPeak_lin=db2mag(DeltaPeak_db)
+DG=1/(2*DeltaPeak_db)
+
+Gsim2=KsG_lin*om0G^2/(s^2+2*DG*om0G*s+om0G^2);
+
+figure (3)
+bode(G, Gsim2); grid on;
+
+Dcl=1
+omcl=4*om0G
+
+Kd=(2*Dcl*omcl-2*DG*om0G)/(KsG_lin*om0G^2)
+Kp=(omcl^2-om0G^2)/(KsG_lin*om0G^2)
+
+Tv=Kd/Kp
+Tf=Tv/10
+
+Gv=omcl^2/((Kp+Kd)*s*Ks*om0G^2)%%%%%%%%%%%%%
+Gr=(1+Tv*s)/(1+Tf*s)%%%%%%%%%%%%%
