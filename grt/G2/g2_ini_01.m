@@ -26,14 +26,14 @@ clc, clear variables
 % 
 % % Start Time, Sample Time
 % t0 = 0.05
-% Ts = 5e-4;
+Ts = 5e-4;
 % K0 = 2;
 % 
 % % Measurement
 load g2_step_data_01.mat % save step_meas_00 data_meas
 % 
 t = g2_step_data_01.time;
-u = g2_step_data_01.signals(1).values;
+u1 = g2_step_data_01.signals(1).values;
 om1 = g2_step_data_01.signals(2).values;
 % y2 = g1_step_data_01.signals(3).values;
 % y3 = g1_step_data_01.signals(4).values;
@@ -52,11 +52,14 @@ om1 = g2_step_data_01.signals(2).values;
 % 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % % G1 Time Domain
-% figure(1)
-plot(t, u), grid on, hold on
+figure(1)
+yyaxis left
+plot(t, u1), grid on, hold on
+ylabel('Voltage [V]')
+yyaxis right
 plot(t, om1), hold off
+ylabel('Angular Velocity [rad/s]')
 xlabel('Time [s]')
-% ylabel('Voltage [V]')
 % legend('u', 'y1', ...
 %     'Location', 'best')
 % xlim([0.045 0.055])
