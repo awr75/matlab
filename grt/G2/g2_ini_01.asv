@@ -40,8 +40,7 @@ om1 = g2_step_data_01.signals(2).values;
 % y4 = g1_step_data_01.signals(5).values;
 % 
 load g2_G_data_01.mat
- 
-f = g2_G_data_01.Frequency;
+ f = G1.Frequency;
 
 % load g1_G2_data_01.mat
 % load g1_G23_data_01.mat
@@ -92,6 +91,11 @@ Rm2 = Rm - Rm1
 
 b = km/Rm * (1/K0 - km)
 
+
+
+% f = G1.Frequency;
+% 
+
 Gmod = K0 / (Tm*s + 1) * exp(-Tt*s)
 Gmod.InputDelay = Tstep;
 
@@ -111,14 +115,13 @@ xlim([4 16])
 
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% G(s) Frequency Domain
+% % G(s) Frequency Domain
 
-figure(2)
-bode(g2_G_data_01), grid on
-%bode(exp(-Tt*s)), grid on
-%legend('G1', 'exp(-j*2*pi*f*Tt)')
+% f = G1.Frequency;
+% 
 
-%plot(f, unwrap(angle(squeeze(g2_G_data_01.ResponseData)))), grid on, hold on
+% figure(2)
+% plot(f, unwrap(angle(squeeze(G1.ResponseData)))), grid on, hold on
 % plot(f, -2*pi*f*Tt), hold off
 % xlabel('Frequency [Hz]')
 % ylabel('Phase [rad]')
