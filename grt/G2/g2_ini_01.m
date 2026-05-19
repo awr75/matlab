@@ -113,10 +113,30 @@ xlim([4 16])
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % G(s) Frequency Domain
 
+KS = db2mag(20.6)
+T1 = 1/1.6
+T2 = 1/57
+
+GS = KS/(T1*s + 1)/(T2*s + 1) * exp(-Tt*s)
+
 figure(2)
-bode(g2_G_data_01), grid on
-%bode(exp(-Tt*s)), grid on
-%legend('G1', 'exp(-j*2*pi*f*Tt)')
+opts = bodeoptions;
+opts.XLim = [0.1, 2*pi*100]; 
+bodeplot(g2_G_data_01, GS, opts), grid on
+legend('G_{meas}', 'G_S')
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PI, Kompensation
+KP_kom = T1 / (4*T2*KS)
+GR_kom = KP_kom*(T1*s+1)/(T1*s)
+
+w0_kom = 1/(2*T2) 
+GW_kom = w0_kom^2 / (s^2 + 2*w0_kom*s + w0_kom^2)
+pole(GW_kom)
+
+p12 = -w0_kom
+
+
 
 %plot(f, unwrap(angle(squeeze(g2_G_data_01.ResponseData)))), grid on, hold on
 % plot(f, -2*pi*f*Tt), hold off
